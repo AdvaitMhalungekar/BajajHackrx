@@ -202,6 +202,6 @@ if __name__ == "__main__":
         "main:app",  # Replace "main" with your filename if different
         host="0.0.0.0",
         port=8000,
-        reload=True,  # Set to False in production
+        reload=False,  # Set to False in production
         log_level="info"
     )
