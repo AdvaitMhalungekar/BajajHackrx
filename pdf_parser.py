@@ -10,7 +10,7 @@ def extract_text_by_page_from_url(pdf_url):
         return [page.extract_text() for page in pdf.pages if page.extract_text()]
     
     
-def chunk_text(text_list, max_chunk_length=1500):
+def chunk_text(text_list, max_chunk_length=96):
     chunks = []
 
     for text in text_list:
