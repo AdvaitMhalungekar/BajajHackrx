@@ -24,6 +24,22 @@ if not pc.has_index(index_name):
     
 index = pc.Index(index_name)
 
+# def upsert_chunks_to_pinecone(text_chunks, namespace="policy-pdf", category=None):
+#     records = []
+#     for i, chunk in enumerate(text_chunks):
+#         record = {
+#             "_id": str(uuid.uuid4()),
+#             "chunk_text": chunk,
+#             "category": category or "unknown"
+#         }
+#         records.append(record)
+
+#     index.upsert_records(namespace=namespace, records=records)
+#     print(f"Upserted {len(records)} records to namespace '{namespace}' in index '{index_name}'")
+def batch_list(input_list, batch_size):
+    for i in range(0, len(input_list), batch_size):
+        yield input_list[i:i + batch_size]
+
 def upsert_chunks_to_pinecone(text_chunks, namespace="policy-pdf", category=None):
     records = []
     for i, chunk in enumerate(text_chunks):
@@ -34,8 +50,10 @@ def upsert_chunks_to_pinecone(text_chunks, namespace="policy-pdf", category=None
         }
         records.append(record)
 
-    index.upsert_records(namespace=namespace, records=records)
-    print(f"Upserted {len(records)} records to namespace '{namespace}' in index '{index_name}'")
+    batch_size = 95  # Pinecone Llama model limit
+    for batch in batch_list(records, batch_size):
+        index.upsert_records(namespace=namespace, records=batch)
+        print(f"Upserted {len(batch)} records to namespace '{namespace}' in index '{index_name}'")
     
 def query_index(query, top_k=3, namespace="policy-pdf", fields=["chunk_text"]):
     results = index.search(
